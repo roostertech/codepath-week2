@@ -7,11 +7,17 @@
 //
 
 import UIKit
+import AFNetworking
 
 class RestaurantCell: UITableViewCell {
 
     @IBOutlet weak var restaurantName: UILabel!
     @IBOutlet weak var restaurantDistance: UILabel!
+    @IBOutlet weak var reviewCount: UILabel!
+    @IBOutlet weak var restaurantAddress: UILabel!
+    @IBOutlet weak var restaurantCategory: UILabel!
+    @IBOutlet weak var starRating: UIImageView!
+    @IBOutlet weak var restaurantImage: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -22,6 +28,30 @@ class RestaurantCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    func prepare (with business: Business) {
+        if let name = business.name {
+            restaurantName.text = name
+        }
+        
+        if let distance = business.distance {
+            restaurantDistance.text = distance
+        }
+        
+        if let starUrl = business.ratingImageURL {
+            starRating.setImageWith(starUrl)
+        }
+        
+        if let profilePic = business.imageURL {
+            restaurantImage.setImageWith(profilePic)
+            restaurantImage.layer.cornerRadius = 5
+            restaurantImage.layer.masksToBounds = true;
+        }
+        
+        if let reviews = business.reviewCount {
+            reviewCount.text = String(describing: reviews) + " Reviews"
+        }
     }
 
 }

@@ -7,7 +7,8 @@ target 'codepath-week2' do
 
   # Pods for codepath-week2
   pod 'Cosmos', '~> 11.0'
-  pod "AFNetworking"
+  pod 'AFNetworking', '~> 2.5'
+  pod 'BDBOAuth1Manager'
   pod "MBProgressHUD"
 
 end
