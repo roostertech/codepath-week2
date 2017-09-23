@@ -13,32 +13,24 @@ class RestaurantsViewController: UIViewController {
     @IBOutlet weak var restaurantsView: UITableView!
     
     var businesses: [Business] = [Business]()
-
+    let defaultSearch = "Restaurant"
+    var searchBar : UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         
-        Business.searchWithTerm(term: "Thai", completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
-            
-            if resultBusinesses != nil {
-                self.businesses = resultBusinesses!
-            }
-            //            if let businesses = businesses {
-//                for business in businesses {
-//                    print(business.name!)
-//                    print(business.address!)
-//                }
-//            }
-            
-            self.restaurantsView.reloadData()
-            
-        }
-        )
-        
+
+        searchBar = UISearchBar()
+        searchBar.delegate = self
+        self.navigationItem.titleView = searchBar
+
         
         restaurantsView.estimatedRowHeight = 140
         restaurantsView.rowHeight = UITableViewAutomaticDimension
+        
+        search()
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,27 +51,49 @@ class RestaurantsViewController: UIViewController {
         let filterViewController = navController.topViewController as! FilterViewController
         filterViewController.delegate = self
     }
- 
-
-}
-
-extension RestaurantsViewController : FilterViewControllerDelegate {
-    func filterViewController(filterViewController: FilterViewController, didUpDateFilters filters: [String : AnyObject]) {
-        
-        let categories = filters["categories"] as! [String]
-        print(categories)
-        
-        Business.searchWithTerm(term: "Restaurants", sort: nil, categories: categories, deals: nil, completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
-            
+    
+    func search() -> Void {
+        Business.searchWithTerm(term: searchBar.text ?? defaultSearch, completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
             if resultBusinesses != nil {
                 self.businesses = resultBusinesses!
-                self.restaurantsView.reloadData()
             }
+            self.restaurantsView.reloadData()
+        }
+        )
+    }
+    
+    func search(filters: [String : AnyObject]) -> Void {
+        Business.searchWithTerm(term : searchBar.text ?? defaultSearch, sort: nil,
+                                categories: filters["categories"] as? [String],
+                                deals: filters["deal"] as? Bool,
+                                completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
+                                    
+                                    if resultBusinesses != nil {
+                                        self.businesses = resultBusinesses!
+                                        self.restaurantsView.reloadData()
+                                    }
         })
+    }
+    
+}
+
+// MARK:- SearchBar
+extension RestaurantsViewController : UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("Search \(String(describing: searchBar.text))")
+        search()
     }
 }
 
-extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate {
+// MARK:- FilterView
+extension RestaurantsViewController : FilterViewControllerDelegate {
+    func filterViewController(filterViewController: FilterViewController, didUpDateFilters filters: [String : AnyObject]) {
+        search(filters: filters)
+    }
+}
+
+// MARK:- TableView
+extension RestaurantsViewController : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantCell", for: indexPath) as! RestaurantCell
         
@@ -93,3 +107,5 @@ extension RestaurantsViewController: UITableViewDataSource, UITableViewDelegate 
         return businesses.count
     }
 }
+
+

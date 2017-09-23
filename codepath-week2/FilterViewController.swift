@@ -186,6 +186,7 @@ class FilterViewController: UIViewController {
     
     var categoryStates : [String:Bool] = [String:Bool]()
     weak var delegate : FilterViewControllerDelegate?
+    var dealState : Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -211,7 +212,8 @@ class FilterViewController: UIViewController {
         }
         
         filters["categories"] = selectedCategories as AnyObject
-
+        filters["deal"] = dealState as AnyObject
+        
         delegate?.filterViewController?(filterViewController: self, didUpDateFilters: filters)
         
         dismiss(animated: true, completion: nil)
@@ -225,21 +227,80 @@ class FilterViewController: UIViewController {
 
 extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        switch section {
+        case 0, 1:
+            return 1
+        case 2:
+            return categories.count
+        default:
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch section {
+        case 0:
+            return 0
+        case 1, 2:
+            return 40
+        default:
+            return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
-        let code : String! = categories[indexPath.row]["code"]
-        cell.prepare(with: categories[indexPath.row]["name"]!)
-        cell.switchHandler = { (isOn)  in
-            self.categoryStates[code] = isOn
+        
+        switch indexPath.section {
+        case 0:
+            let dealCell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
+            dealCell.prepare(with: "Offering a Deal")
+            dealCell.switchHandler = { (isOn)  in
+                self.dealState = isOn
+            }
+            dealCell.switchToggle.isOn = dealState
+            return dealCell
+        case 1:
+            return UITableViewCell()
+        case 2:
+            let categoryCell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
+            let code : String! = categories[indexPath.row]["code"]
+            categoryCell.prepare(with: categories[indexPath.row]["name"]!)
+            categoryCell.switchHandler = { (isOn)  in
+                self.categoryStates[code] = isOn
+            }
+            
+            categoryCell.switchToggle.isOn = self.categoryStates[code] ?? false
+            
+            return categoryCell
+        default:
+            return UITableViewCell()
         }
-
-        cell.switchToggle.isOn = self.categoryStates[code] ?? false
-
-        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        switch section {
+        case 0:
+            return nil
+        case 1:
+            let distanceHeader = UITableViewHeaderFooterView()
+            distanceHeader.textLabel?.text = "Distance"
+            return distanceHeader
+        case 2:
+            let categoryHeader = UITableViewHeaderFooterView()
+            categoryHeader.textLabel?.text = "Categories"
+            return categoryHeader
+        default:
+            return UITableViewHeaderFooterView()
+        }
     }
     
 }

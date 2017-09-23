@@ -39,6 +39,11 @@ class RestaurantCell: UITableViewCell {
             restaurantDistance.text = distance
         }
         
+        
+        if let address = business.address {
+            restaurantAddress.text = address
+        }
+        
         if let starUrl = business.ratingImageURL {
             starRating.setImageWith(starUrl)
         }
