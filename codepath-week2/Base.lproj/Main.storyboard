@@ -198,6 +198,29 @@
                                             <outlet property="switchToggle" destination="KK5-Wh-VZt" id="nDc-to-h0c"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SelectionCell" rowHeight="60" id="LW5-XY-ols" customClass="SelectionCell" customModule="codepath_week2" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="85" width="343" height="60"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="LW5-XY-ols" id="iXI-kU-M1b">
+                                            <rect key="frame" x="0.0" y="0.0" width="343" height="59.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some selection choice" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oaQ-ti-EBt">
+                                                    <rect key="frame" x="10" y="20" width="173" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="oaQ-ti-EBt" firstAttribute="centerY" secondItem="iXI-kU-M1b" secondAttribute="centerY" id="ESK-ST-Mow"/>
+                                                <constraint firstItem="oaQ-ti-EBt" firstAttribute="leading" secondItem="iXI-kU-M1b" secondAttribute="leading" constant="10" id="N0J-r4-51S"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="selectionText" destination="oaQ-ti-EBt" id="Mmw-8V-tCe"/>
+                                        </connections>
+                                    </tableViewCell>
                                 </prototypes>
                                 <connections>
                                     <outlet property="dataSource" destination="UC7-az-wMa" id="79A-4o-8Km"/>
@@ -225,6 +248,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="filtersTableView" destination="sVZ-zY-NwJ" id="hgG-Ad-fUN"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0mt-zW-rW0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -30,7 +30,7 @@ class RestaurantsViewController: UIViewController {
         restaurantsView.estimatedRowHeight = 140
         restaurantsView.rowHeight = UITableViewAutomaticDimension
         
-        search()
+        search(filters: [String : AnyObject]())
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,23 +52,16 @@ class RestaurantsViewController: UIViewController {
         filterViewController.delegate = self
     }
     
-    func search() -> Void {
-        Business.searchWithTerm(term: searchBar.text ?? defaultSearch, completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
-            if resultBusinesses != nil {
-                self.businesses = resultBusinesses!
-            }
-            self.restaurantsView.reloadData()
-        }
-        )
-    }
     
     func search(filters: [String : AnyObject]) -> Void {
-        Business.searchWithTerm(term : searchBar.text ?? defaultSearch, sort: nil,
+        Business.searchWithTerm(term : searchBar.text ?? defaultSearch, sort: filters["sortMode"] as? YelpSortMode,
                                 categories: filters["categories"] as? [String],
                                 deals: filters["deal"] as? Bool,
+                                distanceInMeters: filters["distance"] as? Int,
                                 completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
                                     
                                     if resultBusinesses != nil {
+                                        print("Search returned \(resultBusinesses!.count)")
                                         self.businesses = resultBusinesses!
                                         self.restaurantsView.reloadData()
                                     }
@@ -81,7 +74,7 @@ class RestaurantsViewController: UIViewController {
 extension RestaurantsViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Search \(String(describing: searchBar.text))")
-        search()
+        search(filters: [String : AnyObject]())
     }
 }
 

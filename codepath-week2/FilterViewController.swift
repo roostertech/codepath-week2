@@ -14,6 +14,36 @@ import UIKit
 }
 
 class FilterViewController: UIViewController {
+    @IBOutlet weak var filtersTableView: UITableView!
+    
+    let yelpSortModesMap = [YelpSortMode.distance.rawValue : "Distance",
+        YelpSortMode.bestMatched.rawValue : "Best Matched",
+        YelpSortMode.highestRated.rawValue : "Highest Rated"]
+    
+    // Keep an array version to maintain order
+    let yelpSortModes: [(key: Int, value: String)] = [
+        (key: YelpSortMode.bestMatched.rawValue, value: "Best Matched"),
+        (key: YelpSortMode.highestRated.rawValue, value: "Highest Rated"),
+        (key: YelpSortMode.distance.rawValue, value: "Distance")
+    ]
+    
+    let distanceFiltersMap: [Int: String] = [ 0: "Auto",
+                            804: ".5 miles",
+                            1609: "1 mile",
+                            8046: "5 miles",
+                            32186: "20 miles"
+    ]
+    
+    
+    // Keep an array version to maintain order
+    let distanceFilters: [(key: Int, value: String)] = [
+        (key: 0, value: "Auto"),
+        (key: 804, value: ".5 miles"),
+        (key: 1609, value: "1 mile"),
+        (key: 8046, value: "5 miles"),
+        (key: 32186, value: "20 miles")
+    ]
+    
     let categories = [["name" : "Afghan", "code": "afghani"],
                       ["name" : "African", "code": "african"],
                       ["name" : "American, New", "code": "newamerican"],
@@ -186,12 +216,17 @@ class FilterViewController: UIViewController {
     
     var categoryStates : [String:Bool] = [String:Bool]()
     weak var delegate : FilterViewControllerDelegate?
-    var dealState : Bool = false
+    var dealState: Bool = false
+    var showSortMode: Bool = false
+    var showDistance: Bool = false
+    var selectedDistance: Int = 0
+    var selectedSortMode: Int = YelpSortMode.bestMatched.rawValue
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        filtersTableView.estimatedRowHeight = 100
+        filtersTableView.rowHeight = UITableViewAutomaticDimension
     }
 
     override func didReceiveMemoryWarning() {
@@ -214,6 +249,14 @@ class FilterViewController: UIViewController {
         filters["categories"] = selectedCategories as AnyObject
         filters["deal"] = dealState as AnyObject
         
+        if selectedDistance > 0 {
+            filters["distance"] = selectedDistance as AnyObject
+        }
+        
+        if selectedSortMode != YelpSortMode.bestMatched.rawValue {
+            filters["sortMode"] = YelpSortMode(rawValue: selectedSortMode) as AnyObject
+        }
+
         delegate?.filterViewController?(filterViewController: self, didUpDateFilters: filters)
         
         dismiss(animated: true, completion: nil)
@@ -226,16 +269,32 @@ class FilterViewController: UIViewController {
 }
 
 extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
-    
+    enum filterSection: Int {
+        case deal = 0,
+        distance,
+        sortMode,
+        category
+    }
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0, 1:
+        case filterSection.deal.rawValue:
             return 1
-        case 2:
+        case filterSection.sortMode.rawValue:
+            if showSortMode {
+                return yelpSortModes.count
+            }
+            return 1
+        case filterSection.distance.rawValue:
+            if showDistance {
+                return distanceFilters.count
+            } else {
+                return 1
+            }
+        case 3:
             return categories.count
         default:
             return 0
@@ -246,7 +305,7 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case 0:
             return 0
-        case 1, 2:
+        case 1, 2, 3:
             return 40
         default:
             return 0
@@ -257,10 +316,41 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
         return 0
     }
     
+    
+    func makeDistanceCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        let distanceCell = tableView.dequeueReusableCell(withIdentifier: "SelectionCell", for: indexPath) as! SelectionCell
+        
+        var row: (key: Int, value: String)?
+        
+        if showDistance {
+            row = distanceFilters[indexPath.row]
+            distanceCell.prepare(selectionLabel: (row?.value)!, isSelected: row?.key == selectedDistance)
+        } else {
+            // Menu is collapsed, show only selected element
+            distanceCell.prepare(selectionLabel: distanceFiltersMap[selectedDistance]!, isSelected: true)
+        }
+        return distanceCell
+    }
+    
+    func makeSortModeCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
+        let sortModeCell = tableView.dequeueReusableCell(withIdentifier: "SelectionCell", for: indexPath) as! SelectionCell
+        
+        var row: (key: Int, value: String)?
+        
+        if showSortMode {
+            row = yelpSortModes[indexPath.row]
+            sortModeCell.prepare(selectionLabel: (row?.value)!, isSelected: row?.key == selectedDistance)
+        } else {
+            // Menu is collapsed, show only selected element
+            sortModeCell.prepare(selectionLabel: yelpSortModesMap[selectedSortMode]!, isSelected: true)
+        }
+        return sortModeCell
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
-        case 0:
+        case filterSection.deal.rawValue:
             let dealCell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
             dealCell.prepare(with: "Offering a Deal")
             dealCell.switchHandler = { (isOn)  in
@@ -268,9 +358,14 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
             }
             dealCell.switchToggle.isOn = dealState
             return dealCell
-        case 1:
-            return UITableViewCell()
-        case 2:
+            
+        case filterSection.distance.rawValue:
+            return makeDistanceCell(tableView: tableView, indexPath: indexPath)
+            
+        case filterSection.sortMode.rawValue:
+            return makeSortModeCell(tableView: tableView, indexPath: indexPath)
+            
+        case 3:
             let categoryCell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
             let code : String! = categories[indexPath.row]["code"]
             categoryCell.prepare(with: categories[indexPath.row]["name"]!)
@@ -286,6 +381,29 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.section {
+        case filterSection.distance.rawValue:
+            if showDistance {
+                self.selectedDistance = distanceFilters[indexPath.row].key
+                print ("Selected distance \(distanceFilters[indexPath.row].value)")
+            }
+            self.showDistance = !self.showDistance
+            tableView.reloadData()
+            break
+        case filterSection.sortMode.rawValue:
+            if showSortMode {
+                self.selectedSortMode = yelpSortModes[indexPath.row].key
+                print ("Selected sort mode \(yelpSortModes[indexPath.row].value)")
+            }
+            self.showSortMode = !self.showSortMode
+            tableView.reloadData()
+            break;
+        default:
+            break
+        }
+    }
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:
@@ -295,6 +413,10 @@ extension FilterViewController: UITableViewDelegate, UITableViewDataSource {
             distanceHeader.textLabel?.text = "Distance"
             return distanceHeader
         case 2:
+            let distanceHeader = UITableViewHeaderFooterView()
+            distanceHeader.textLabel?.text = "Sort By"
+            return distanceHeader
+        case 3:
             let categoryHeader = UITableViewHeaderFooterView()
             categoryHeader.textLabel?.text = "Categories"
             return categoryHeader

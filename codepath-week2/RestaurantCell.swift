@@ -48,6 +48,10 @@ class RestaurantCell: UITableViewCell {
             starRating.setImageWith(starUrl)
         }
         
+        if let category = business.categories {
+            restaurantCategory.text = category
+        }
+        
         if let profilePic = business.imageURL {
             restaurantImage.setImageWith(profilePic)
             restaurantImage.layer.cornerRadius = 5

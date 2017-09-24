@@ -10,6 +10,7 @@
 		3135051EBD54EA79380899D1 /* Pods_codepath_week2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59CC526BAF35944452BACA53 /* Pods_codepath_week2.framework */; };
 		765546DD1F74DDED00A44998 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765546DC1F74DDED00A44998 /* FilterViewController.swift */; };
 		765546E01F74EA9300A44998 /* SwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 765546DF1F74EA9300A44998 /* SwitchCell.swift */; };
+		76A2CA441F76740300ACDA44 /* SelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2CA431F76740300ACDA44 /* SelectionCell.swift */; };
 		76A553AB1F70B735001755EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A553AA1F70B735001755EF /* AppDelegate.swift */; };
 		76A553B01F70B735001755EF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 76A553AE1F70B735001755EF /* Main.storyboard */; };
 		76A553B21F70B735001755EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76A553B11F70B735001755EF /* Assets.xcassets */; };
@@ -26,6 +27,7 @@
 		5FA2DC8BEED2C4A01416637B /* Pods-codepath-week2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-codepath-week2.debug.xcconfig"; path = "Pods/Target Support Files/Pods-codepath-week2/Pods-codepath-week2.debug.xcconfig"; sourceTree = "<group>"; };
 		765546DC1F74DDED00A44998 /* FilterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
 		765546DF1F74EA9300A44998 /* SwitchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwitchCell.swift; sourceTree = "<group>"; };
+		76A2CA431F76740300ACDA44 /* SelectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectionCell.swift; sourceTree = "<group>"; };
 		76A553A71F70B735001755EF /* codepath-week2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "codepath-week2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		76A553AA1F70B735001755EF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		76A553AF1F70B735001755EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 			children = (
 				76A553C61F738956001755EF /* RestaurantCell.swift */,
 				765546DF1F74EA9300A44998 /* SwitchCell.swift */,
+				76A2CA431F76740300ACDA44 /* SelectionCell.swift */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -275,6 +278,7 @@
 			files = (
 				765546DD1F74DDED00A44998 /* FilterViewController.swift in Sources */,
 				76A553C71F738956001755EF /* RestaurantCell.swift in Sources */,
+				76A2CA441F76740300ACDA44 /* SelectionCell.swift in Sources */,
 				76A553C91F738BD0001755EF /* RestaurantsViewController.swift in Sources */,
 				76A553AB1F70B735001755EF /* AppDelegate.swift in Sources */,
 				76A553CE1F73983E001755EF /* Business.swift in Sources */,
