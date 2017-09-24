@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MBProgressHUD
 
 class RestaurantsViewController: UIViewController {
 
@@ -15,6 +16,8 @@ class RestaurantsViewController: UIViewController {
     var businesses: [Business] = [Business]()
     let defaultSearch = "Restaurant"
     var searchBar : UISearchBar!
+    var isMoreDataLoading = false
+    var filters: [String : AnyObject] =  [String : AnyObject]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,21 +56,35 @@ class RestaurantsViewController: UIViewController {
     }
     
     
+    
     func search(filters: [String : AnyObject]) -> Void {
+        search(filters: filters, offset: nil)
+    }
+    func search(filters: [String : AnyObject], offset: Int?) -> Void {
+        MBProgressHUD.showAdded(to: self.view, animated: true)
+
+        self.filters = filters
         Business.searchWithTerm(term : searchBar.text ?? defaultSearch, sort: filters["sortMode"] as? YelpSortMode,
                                 categories: filters["categories"] as? [String],
                                 deals: filters["deal"] as? Bool,
                                 distanceInMeters: filters["distance"] as? Int,
+                                offset: offset,
                                 completion: { (resultBusinesses: [Business]?, error: Error?) -> Void in
                                     
+                                    MBProgressHUD.hide(for: self.view, animated: true)
+                                    self.isMoreDataLoading = false
                                     if resultBusinesses != nil {
                                         print("Search returned \(resultBusinesses!.count)")
-                                        self.businesses = resultBusinesses!
+                                        if offset != nil {
+                                            self.businesses.append(contentsOf: resultBusinesses!)
+                                            print("Total \(self.businesses.count)")
+                                        } else {
+                                            self.businesses = resultBusinesses!
+                                        }
                                         self.restaurantsView.reloadData()
                                     }
         })
     }
-    
 }
 
 // MARK:- SearchBar
@@ -98,6 +115,35 @@ extension RestaurantsViewController : UITableViewDataSource, UITableViewDelegate
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return businesses.count
+    }
+}
+
+// MARK:- ScrollView
+extension RestaurantsViewController : UIScrollViewDelegate {
+
+    func loadMoreData() {
+  
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (!isMoreDataLoading) {
+            // Calculate the position of one screen length before the bottom of the results
+            let scrollViewContentHeight = restaurantsView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - restaurantsView.bounds.size.height
+            
+            print("Height \(scrollViewContentHeight) threshold \(scrollOffsetThreshold) \(restaurantsView.contentSize.height) \(restaurantsView.bounds.size.height)")
+            
+            // When the user has scrolled past the threshold, start requesting
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && restaurantsView.isDragging) {
+                
+                // If we have less than 20 to start out with, no need to load more
+                if self.businesses.count < 20 {
+                    return
+                }
+                
+                isMoreDataLoading = true
+                search(filters: self.filters, offset: self.businesses.count)
+            }
+        }
     }
 }
 
