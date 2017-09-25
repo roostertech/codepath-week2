@@ -79,10 +79,23 @@ class RestaurantsViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        
-        let navController = segue.destination as! UINavigationController
-        let filterViewController = navController.topViewController as! FilterViewController
-        filterViewController.delegate = self
+        if segue.destination is UINavigationController {
+            let navController = segue.destination as! UINavigationController
+            
+            let filterViewController = navController.topViewController as! FilterViewController
+            filterViewController.delegate = self
+            filterViewController.parepare(filters: filters)
+        } else if segue.destination is DetailViewController {
+            let detailController = segue.destination as! DetailViewController
+            
+            if let cell = sender as? UITableViewCell {
+                let indexPath = restaurantsView.indexPath(for: cell)
+                detailController.prepare(business: businesses[indexPath!.row])
+            }
+
+
+            
+        }
     }
     
     
@@ -207,10 +220,10 @@ extension RestaurantsViewController : MKMapViewDelegate {
         semaphore.wait()
     }
     
-    func addAnnotationAtCoordinate(coordinate: CLLocationCoordinate2D) {
+    func addAnnotationAtCoordinate(coordinate: CLLocationCoordinate2D, title: String) {
         let annotation = MKPointAnnotation()
         annotation.coordinate = coordinate
-        annotation.title = "An annotation!"
+        annotation.title = title
         mapView.addAnnotation(annotation)
     }
 
@@ -223,7 +236,7 @@ extension RestaurantsViewController : MKMapViewDelegate {
                 continue
             }
             addAnnotationAtCoordinate(coordinate:
-                CLLocationCoordinate2D(latitude: business.latitude!, longitude: business.longitude!))
+                CLLocationCoordinate2D(latitude: business.latitude!, longitude: business.longitude!), title: business.name!)
         }
 
         mapView.showAnnotations(mapView.annotations, animated: true)
