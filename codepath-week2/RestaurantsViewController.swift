@@ -98,8 +98,6 @@ class RestaurantsViewController: UIViewController {
         }
     }
     
-    
-    
     func search(filters: [String : AnyObject]) -> Void {
         search(filters: filters, offset: nil)
     }
@@ -139,7 +137,7 @@ class RestaurantsViewController: UIViewController {
 extension RestaurantsViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("Search \(String(describing: searchBar.text))")
-        search(filters: [String : AnyObject]())
+        search(filters: filters)
     }
 }
 

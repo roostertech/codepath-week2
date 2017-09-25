@@ -1,8 +1,8 @@
 # Project 2 - *Week 2 - Yelp App*
 
-**Name of your app** is a Yelp search app using the [Yelp API](http://www.yelp.com/developers/documentation/v2/search_api).
+**Yelp?** is a Yelp search app using the [Yelp API](http://www.yelp.com/developers/documentation/v2/search_api).
 
-Time spent: **X** hours spent in total
+Time spent: **20** hours spent in total
 
 ## User Stories
 
@@ -24,39 +24,34 @@ The following **optional** features are implemented:
    - [x] Infinite scroll for restaurant results.
    - [x] Implement map view of restaurant results.
 - [x] Filter page
-   - [ ] Implement a custom switch instead of the default UISwitch.
+   - [ ] Implement a custom switch instead of the default UISwitch. :(
    - [x] Distance filter should expand as in the real Yelp app
    - [x] Categories should show a subset of the full list with a "See All" row to expand. Category list is [here](http://www.yelp.com/developers/documentation/category_list).
-- [ ] Implement the restaurant detail page.
+- [x] Implement the restaurant detail page.
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you can get done to improve the app functionality!
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
-1.
+1. Code organization best practice. Code files are getting significantly large
 2.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+![](gifs/yelp.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
-
-
-## Credits 
-Map by Aya Sofya from the Noun Project
+I sunked a huge chunk of time on silly mistake with autolayout and spent the next hour trying to unwind it. Lesson learnt: just reset and redo it from scratch
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright 2017 Phuong Nguyen
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
