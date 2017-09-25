@@ -20,9 +20,9 @@ The following **required** functionality is completed:
 
 The following **optional** features are implemented:
 
-- [ ] Search results page
-   - [ ] Infinite scroll for restaurant results.
-   - [ ] Implement map view of restaurant results.
+- [x] Search results page
+   - [x] Infinite scroll for restaurant results.
+   - [x] Implement map view of restaurant results.
 - [ ] Filter page
    - [ ] Implement a custom switch instead of the default UISwitch.
    - [x] Distance filter should expand as in the real Yelp app
@@ -49,6 +49,10 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Notes
 
 Describe any challenges encountered while building the app.
+
+
+## Credits 
+Map by Aya Sofya from the Noun Project
 
 ## License
 

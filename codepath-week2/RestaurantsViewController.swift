@@ -8,16 +8,29 @@
 
 import UIKit
 import MBProgressHUD
+import MapKit
+import CoreLocation
+import AFNetworking
 
 class RestaurantsViewController: UIViewController {
 
     @IBOutlet weak var restaurantsView: UITableView!
-    
+    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var mapButton: UIBarButtonItem!
+
     var businesses: [Business] = [Business]()
+    var businessesIndex: [String: Business] = [String: Business]()
     let defaultSearch = "Restaurant"
     var searchBar : UISearchBar!
     var isMoreDataLoading = false
     var filters: [String : AnyObject] =  [String : AnyObject]()
+    var displayMap = false
+    
+    
+    @IBAction func switchMapList(_ sender: Any) {
+        displayMap = !displayMap
+        setupMapOrList()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,9 +45,26 @@ class RestaurantsViewController: UIViewController {
         
         restaurantsView.estimatedRowHeight = 140
         restaurantsView.rowHeight = UITableViewAutomaticDimension
+
+        centerMap()
+        setupMapOrList()
         
         search(filters: [String : AnyObject]())
     }
+    
+    func setupMapOrList() {
+        if self.displayMap {
+            mapView.isHidden = false
+            restaurantsView.isHidden = true
+            self.mapButton.image = #imageLiteral(resourceName: "list")
+        } else {
+            mapView.isHidden = true
+            restaurantsView.isHidden = false
+            self.mapButton.image = #imageLiteral(resourceName: "map")
+
+        }
+    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -81,7 +111,12 @@ class RestaurantsViewController: UIViewController {
                                         } else {
                                             self.businesses = resultBusinesses!
                                         }
+                                        self.businessesIndex.removeAll()
+                                        for business in self.businesses {
+                                            self.businessesIndex[business.name!] = business
+                                        }
                                         self.restaurantsView.reloadData()
+                                        self.reloadMap()
                                     }
         })
     }
@@ -147,4 +182,81 @@ extension RestaurantsViewController : UIScrollViewDelegate {
     }
 }
 
+// MARK:- MapView
+extension RestaurantsViewController : MKMapViewDelegate {
+    
+    // add an annotation with an address: String
+    func addAnnotationAtAddress(address: String, title: String) {
+        let semaphore = DispatchSemaphore(value: 1)
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address) { (placemarks, error) in
+            if let placemarks = placemarks {
+                if placemarks.count != 0 {
+                    let coordinate = placemarks.first!.location!
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = coordinate.coordinate
+                    annotation.title = title
+                    self.mapView.addAnnotation(annotation)
+                }
+            } else {
+                print("Could not decode \(address)")
+            }
+            
+            semaphore.signal()
+        }
+        semaphore.wait()
+    }
+    
+    func addAnnotationAtCoordinate(coordinate: CLLocationCoordinate2D) {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        annotation.title = "An annotation!"
+        mapView.addAnnotation(annotation)
+    }
 
+    
+    func reloadMap() {
+        mapView.removeAnnotations(mapView.annotations)
+        for business: Business in businesses {
+            if business.longitude == nil || business.latitude == nil {
+                print("No coor for \(business.name!)")
+                continue
+            }
+            addAnnotationAtCoordinate(coordinate:
+                CLLocationCoordinate2D(latitude: business.latitude!, longitude: business.longitude!))
+        }
+
+        mapView.showAnnotations(mapView.annotations, animated: true)
+    }
+ 
+    func centerMap() {
+        let rgn = MKCoordinateRegionMakeWithDistance(CLLocationCoordinate2DMake(37.7833, -122.4067), 2000, 2000);
+        mapView.setRegion(rgn, animated: false)
+        mapView.isZoomEnabled = true
+        mapView.showsCompass = true
+        
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is MKUserLocation {
+            return nil
+        }
+        
+        let identifier = "MyCustomAnnotation"
+        
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+        if annotationView == nil {
+            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+            annotationView?.canShowCallout = true
+        } else {
+            annotationView!.annotation = annotation
+        }
+        
+//        let business = self.businessesIndex[annotation.title!!]
+        // TODO better image view
+        annotationView?.image = #imageLiteral(resourceName: "map")
+        
+        
+        return annotationView
+    }
+}
